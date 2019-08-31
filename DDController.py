@@ -4,7 +4,7 @@ import dd
 import misc
 import math
 import numpy
-from os.path import join, basename
+from os.path import join, dirname
 
 class CInferenceSettings(misc.settings.CSettings):
   _Dict = {
@@ -13,12 +13,12 @@ class CInferenceSettings(misc.settings.CSettings):
     'ImageHeight': 210
   },
   'Inference': {
-    'CheckpointPath':   'trained',
+    'CheckpointPath':   join(dirname(__file__), 'trained'),
     'Epoch': None,
   },
   'PreProcessing':
   {
-    'MeanFile': join(basename(__file__), 'image-mean.tfrecord')
+    'MeanFile': join(dirname(__file__), 'image-mean.tfrecord')
   },
   }
 
