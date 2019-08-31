@@ -39,3 +39,5 @@ bng.load_scenario(scenario)
 bng.start_scenario()
 bng.set_deterministic()
 bng.pause()
+
+import example  # Execute the example
