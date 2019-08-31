@@ -4,6 +4,7 @@ import dd
 import misc
 import math
 import numpy
+from os.path import join, basename
 
 class CInferenceSettings(misc.settings.CSettings):
   _Dict = {
@@ -17,7 +18,7 @@ class CInferenceSettings(misc.settings.CSettings):
   },
   'PreProcessing':
   {
-    'MeanFile': 'image-mean.tfrecord'
+    'MeanFile': join(basename(__file__), 'image-mean.tfrecord')
   },
   }
 
