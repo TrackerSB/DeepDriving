@@ -8,7 +8,8 @@ import fileinput
 
 setup_logging()
 
-bng = BeamNGpy('localhost', 64256)
+bng = BeamNGpy('localhost', 64256, home="G:\\gitrepos\\beamng-research_unlimited\\trunk",
+               user="G:\\gitrepos\\BeamNG_user_path")
 
 scenario = Scenario('smallgrid', 'small_test')
 
