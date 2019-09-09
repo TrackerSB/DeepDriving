@@ -26,15 +26,21 @@ class AI:
         return preprocessed
 
     def start(self, sid: SimulationID, vid: VehicleID) -> None:
-        from drivebuildclient.aiExchangeMessages_pb2 import SimStateResponse, DataRequest
+        from drivebuildclient.aiExchangeMessages_pb2 import SimStateResponse, DataRequest, Control
+        from PIL import Image
+        from io import BytesIO
         request = DataRequest()
-        request.rids.append("egoFrontCamera")
+        request.request_ids.append("egoFrontCamera")
         while True:
             sim_state = self.service.wait_for_simulator_request(sid, vid)
             if sim_state == SimStateResponse.SimState.RUNNING:
                 data = self.service.request_data(sid, vid, request)
-                speed = data.data["egoSpeed"].value
-                color_image = data.data["egoFrontCamera"].color
-                controls = CONTROLLER.getControl(color_image, speed)
+                speed = data.data["egoSpeed"].speed.speed
+                color_image = Image.open(BytesIO(data.data["egoFrontCamera"].camera.color))
+                controls = CONTROLLER.getControl(AI._preprocess(color_image, BRIGHTNESS), speed)
+                control = Control()
+                control.avCommand.steer = controls.steering
+                control.avCommand.accelerate = controls.throttle
+                self.service.control(sid, vid, control)
             else:
                 break
