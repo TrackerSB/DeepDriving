@@ -1,3 +1,5 @@
+from typing import Callable
+
 from drivebuildclient.AIExchangeService import AIExchangeService
 from drivebuildclient.aiExchangeMessages_pb2 import SimulationID, VehicleID
 
@@ -25,7 +27,7 @@ class AI:
         preprocessed = cvtColor(hsv, COLOR_HSV2BGR)
         return preprocessed
 
-    def start(self, sid: SimulationID, vid: VehicleID) -> None:
+    def start(self, sid: SimulationID, vid: VehicleID, dynamic_stats_callback: Callable[[], None]) -> None:
         from drivebuildclient.aiExchangeMessages_pb2 import SimStateResponse, DataRequest, Control
         from drivebuildclient.common import eprint
         from PIL import Image
@@ -34,6 +36,7 @@ class AI:
         request.request_ids.append("egoFrontCamera")
         while True:
             sim_state = self.service.wait_for_simulator_request(sid, vid)
+            dynamic_stats_callback()
             if sim_state == SimStateResponse.SimState.RUNNING:
                 data = self.service.request_data(sid, vid, request)
                 speed = data.data["egoSpeed"].speed.speed
