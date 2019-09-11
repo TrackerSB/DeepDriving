@@ -27,6 +27,7 @@ class AI:
 
     def start(self, sid: SimulationID, vid: VehicleID) -> None:
         from drivebuildclient.aiExchangeMessages_pb2 import SimStateResponse, DataRequest, Control
+        from drivebuildclient.common import eprint
         from PIL import Image
         from io import BytesIO
         request = DataRequest()
@@ -36,11 +37,14 @@ class AI:
             if sim_state == SimStateResponse.SimState.RUNNING:
                 data = self.service.request_data(sid, vid, request)
                 speed = data.data["egoSpeed"].speed.speed
-                color_image = Image.open(BytesIO(data.data["egoFrontCamera"].camera.color))
-                controls = CONTROLLER.getControl(AI._preprocess(color_image, BRIGHTNESS), speed)
-                control = Control()
-                control.avCommand.steer = controls.steering
-                control.avCommand.accelerate = controls.throttle
-                self.service.control(sid, vid, control)
+                if data:
+                    color_image = Image.open(BytesIO(data.data["egoFrontCamera"].camera.color))
+                    controls = CONTROLLER.getControl(AI._preprocess(color_image, BRIGHTNESS), speed)
+                    control = Control()
+                    control.avCommand.steer = controls.steering
+                    control.avCommand.accelerate = controls.throttle
+                    self.service.control(sid, vid, control)
+                else:
+                    eprint("The request for data returned None.")
             else:
                 break
