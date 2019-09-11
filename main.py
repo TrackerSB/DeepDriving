@@ -2,6 +2,7 @@ from typing import Callable
 
 from drivebuildclient.AIExchangeService import AIExchangeService
 from drivebuildclient.aiExchangeMessages_pb2 import SimulationID, VehicleID
+from lxml.etree import _Element, Element
 
 from DDController import Controller
 
@@ -51,3 +52,9 @@ class AI:
                     eprint("The request for data returned None.")
             else:
                 break
+
+    @staticmethod
+    def add_data_requests(parent: _Element) -> None:
+        speed_node = Element("speed")
+        speed_node.set("id", "egoSpeed")
+        parent.append(speed_node)
