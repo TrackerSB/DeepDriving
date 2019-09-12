@@ -37,8 +37,8 @@ class AI:
         request.request_ids.append("egoFrontCamera")
         while True:
             sim_state = self.service.wait_for_simulator_request(sid, vid)
-            dynamic_stats_callback()
             if sim_state == SimStateResponse.SimState.RUNNING:
+                dynamic_stats_callback()
                 data = self.service.request_data(sid, vid, request)
                 speed = data.data["egoSpeed"].speed.speed
                 if data:
