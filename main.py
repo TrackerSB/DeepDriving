@@ -33,16 +33,16 @@ class AI:
         from drivebuildclient.common import eprint
         from PIL import Image
         from io import BytesIO
-        request = DataRequest()
-        request.request_ids.append("egoFrontCamera")
         while True:
             sim_state = self.service.wait_for_simulator_request(sid, vid)
             if sim_state == SimStateResponse.SimState.RUNNING:
                 dynamic_stats_callback()
+                request = DataRequest()
+                request.request_ids.append("egoFrontCamera_" + vid.vid)
                 data = self.service.request_data(sid, vid, request)
-                speed = data.data["egoSpeed"].speed.speed
+                speed = data.data["egoSpeed_" + vid.vid].speed.speed
                 if data:
-                    color_image = Image.open(BytesIO(data.data["egoFrontCamera"].camera.color))
+                    color_image = Image.open(BytesIO(data.data["egoFrontCamera_" + vid.vid].camera.color))
                     controls = CONTROLLER.getControl(AI._preprocess(color_image, BRIGHTNESS), speed)
                     control = Control()
                     control.avCommand.steer = controls.steering
@@ -54,7 +54,14 @@ class AI:
                 break
 
     @staticmethod
-    def add_data_requests(parent: _Element) -> None:
+    def add_data_requests(parent: _Element, participant: str) -> None:
         speed_node = Element("speed")
-        speed_node.set("id", "egoSpeed")
+        speed_node.set("id", "egoSpeed_" + participant)
         parent.append(speed_node)
+        camera_node = Element("camera")
+        camera_node.set("id", "egoFrontCamera_" + participant)
+        camera_node.set("width", "160")
+        camera_node.set("height", "120")
+        camera_node.set("direction", "FRONT")
+        camera_node.set("fov", "60")
+        parent.append(camera_node)
