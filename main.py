@@ -30,7 +30,6 @@ class AI:
 
     def start(self, sid: SimulationID, vid: VehicleID, dynamic_stats_callback: Callable[[], None]) -> None:
         from drivebuildclient.aiExchangeMessages_pb2 import SimStateResponse, DataRequest, Control
-        from drivebuildclient.common import eprint
         from PIL import Image
         from io import BytesIO
         while True:
@@ -49,7 +48,7 @@ class AI:
                     control.avCommand.accelerate = controls.throttle
                     self.service.control(sid, vid, control)
                 else:
-                    eprint("The request for data returned None.")
+                    print("The request for data returned None.")
             else:
                 break
 
